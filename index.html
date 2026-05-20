@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For You, My Love ♥</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ------------------------------------------------------------------
+   ♥  GLOBAL RESET & BASE
+   ------------------------------------------------------------------ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #08000f;
+  color: #fff;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  cursor: none;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------------
+   ♥  CUSTOM CURSOR
+   ------------------------------------------------------------------ */
+.cursor {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: screen;
+  transition: transform 0.1s ease;
+}
+.cursor::before {
+  content: '♥';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff4d8d;
+  font-size: 20px;
+  text-shadow:
+    0 0 10px #ff4d8d,
+    0 0 20px #ff1a6b,
+    0 0 30px #ff1a6b;
+  animation: cursorPulse 1.2s ease-in-out infinite;
+}
+@keyframes cursorPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.25); }
+}
+
+/* ------------------------------------------------------------------
+   ♥  MUSIC BUTTON
+   ------------------------------------------------------------------ */
+.music-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 77, 141, 0.15);
+  border: 2px solid rgba(255, 77, 141, 0.5);
+  color: #ffb3cd;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 9000;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.music-toggle:hover {
+  background: rgba(255, 77, 141, 0.35);
+  box-shadow: 0 0 25px #ff4d8d;
+  transform: scale(1.1);
+}
+.music-toggle.playing {
+  animation: spin 8s linear infinite;
+  background: rgba(255, 77, 141, 0.4);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Progress dots */
+.progress {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 9000;
+}
+.progress .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.4s ease;
+}
+.progress .dot.active {
+  background: #ff4d8d;
+  box-shadow: 0 0 12px #ff4d8d;
+  transform: scale(1.4);
+}
+.progress .dot.done {
+  background: rgba(255, 179, 205, 0.6);
+}
+
+/* ------------------------------------------------------------------
+   ♥  SCENES
+   ------------------------------------------------------------------ */
+.scene {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.6s ease;
+  overflow: hidden;
+}
+.scene.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+canvas.fullscreen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Continue button (shared) */
+.continue-btn {
+  position: relative;
+  margin-top: 40px;
+  padding: 14px 44px;
+  background: transparent;
+  border: 2px solid #ff4d8d;
+  color: #ffd1e0;
+  font-size: 18px;
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-radius: 60px;
+  cursor: none;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  z-index: 5;
+}
+.continue-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ff4d8d, #ff1a6b);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+.continue-btn:hover {
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255,77,141,0.7), 0 0 60px rgba(255,26,107,0.4);
+  transform: translateY(-3px);
+}
+.continue-btn:hover::before { opacity: 1; }
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 1 - COSMIC OPENING
+   ------------------------------------------------------------------ */
+#scene1 {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(120, 0, 80, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(40, 0, 120, 0.5) 0%, transparent 60%),
+    radial-gradient(ellipse at center, #1a0033 0%, #06000d 90%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.giant-heart {
+  font-size: clamp(80px, 14vw, 160px);
+  color: #ff3366;
+  text-shadow:
+    0 0 30px #ff3366,
+    0 0 60px #ff1a6b,
+    0 0 100px #ff0044,
+    0 0 140px rgba(255, 0, 80, 0.5);
+  animation: heartbeat 1.4s ease-in-out infinite;
+  position: relative;
+  z-index: 5;
+}
+@keyframes heartbeat {
+  0%, 30%, 100% { transform: scale(1); }
+  15%, 45%      { transform: scale(1.18); }
+}
+
+.opening-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(48px, 8vw, 96px);
+  margin-top: 20px;
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffd700 25%, #ffb3cd 50%, #ff6b9d 75%, #ffd700 100%);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 107, 157, 0.5));
+  z-index: 5;
+  line-height: 1.1;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.opening-subtitle {
+  font-style: italic;
+  font-size: clamp(18px, 2.2vw, 24px);
+  margin-top: 20px;
+  color: #ffd1e0;
+  letter-spacing: 4px;
+  opacity: 0;
+  animation: fadeUp 2s ease 1.5s forwards;
+  z-index: 5;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 0.85; transform: translateY(0); }
+}
+
+/* Floating orbs around opening */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  pointer-events: none;
+  animation: floatOrb linear infinite;
+}
+@keyframes floatOrb {
+  0%   { transform: translateY(100vh) scale(0.5); opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 2 - LOVE LETTER
+   ------------------------------------------------------------------ */
+#scene2 {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 100, 150, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(200, 50, 130, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #2a0820 0%, #4a0a35 50%, #2a0820 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.letter-container {
+  position: relative;
+  max-width: 720px;
+  width: 90%;
+  padding: 50px 60px;
+  background: rgba(255, 240, 245, 0.04);
+  border: 1px solid rgba(255, 200, 220, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 10;
+  text-align: center;
+}
+.letter-container::before {
+  content: '';
+  position: absolute;
+  top: -30px; left: -30px;
+  font-size: 80px;
+  color: rgba(255, 200, 220, 0.2);
+}
+.letter-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 56px;
+  color: #ffb3cd;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 20px rgba(255, 179, 205, 0.5);
+}
+.letter-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  line-height: 1.9;
+  color: #ffe6ee;
+  font-style: italic;
+  min-height: 280px;
+  white-space: pre-line;
+}
+.letter-text .cursor-blink {
+  display: inline-block;
+  width: 2px;
+  background: #ffb3cd;
+  animation: blink 0.8s infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.petal {
+  position: absolute;
+  font-size: 24px;
+  animation: fall linear infinite;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(255, 150, 180, 0.5));
+}
+@keyframes fall {
+  0%   { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 3 - MEMORY GARDEN
+   ------------------------------------------------------------------ */
+#scene3 {
+  background:
+    linear-gradient(180deg,
+      #2c0a3a 0%,
+      #5a1850 30%,
+      #c45a8a 60%,
+      #ff9966 85%,
+      #ffcc99 100%);
+}
+
+.garden-hint {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Dancing Script', cursive;
+  font-size: 32px;
+  color: #fff;
+  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+  text-align: center;
+  z-index: 5;
+}
+.garden-hint small {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-style: italic;
+  margin-top: 8px;
+  opacity: 0.9;
+}
+
+.flower-counter {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-style: italic;
+  border: 1px solid rgba(255, 200, 220, 0.3);
+  z-index: 5;
+  color: #ffe6ee;
+}
+
+.garden-continue {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 6;
+}
+.garden-continue.show { opacity: 1; pointer-events: auto; }
+
+.garden-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(180deg, transparent 0%, rgba(80, 30, 60, 0.7) 100%);
+  pointer-events: none;
+}
+
+/* Bloom animation */
+.bloom {
+  position: absolute;
+  pointer-events: none;
+  font-size: 0px;
+  animation: bloomGrow 1.2s ease-out forwards, bloomFloat 4s ease-in-out 1.2s infinite;
+  filter: drop-shadow(0 0 12px currentColor);
+}
+@keyframes bloomGrow {
+  0%   { font-size: 0px; transform: rotate(-180deg) scale(0); }
+  60%  { font-size: 60px; transform: rotate(20deg) scale(1.3); }
+  100% { font-size: 50px; transform: rotate(0deg) scale(1); }
+}
+@keyframes bloomFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(5deg); }
+}
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 4 - CONSTELLATION
+   ------------------------------------------------------------------ */
+#scene4 {
+  background:
+    radial-gradient(ellipse at center, #1a0540 0%, #04000c 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.constellation-text {
+  position: absolute;
+  bottom: 120px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 24px;
+  color: #d9c8ff;
+  text-shadow: 0 0 20px rgba(180, 150, 255, 0.5);
+  opacity: 0;
+  transition: opacity 2s ease;
+  z-index: 5;
+  padding: 0 20px;
+}
+.constellation-text.show { opacity: 1; }
+.constellation-text strong {
+  font-family: 'Great Vibes', cursive;
+  font-size: 56px;
+  font-weight: normal;
+  color: #fff;
+  display: block;
+  margin: 12px 0;
+  text-shadow:
+    0 0 20px #fff,
+    0 0 40px #b39dff,
+    0 0 60px #7a6bff;
+}
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 5 - LOVE METER
+   ------------------------------------------------------------------ */
+#scene5 {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 100, 180, 0.3) 0%, transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(180, 80, 220, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, #1a0830 0%, #3a0a50 50%, #1a0830 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.meter-card {
+  width: 90%;
+  max-width: 600px;
+  padding: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 200, 220, 0.25);
+  border-radius: 24px;
+  backdrop-filter: blur(15px);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  z-index: 5;
+}
+.meter-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 56px;
+  color: #ffb3cd;
+  text-shadow: 0 0 30px #ff4d8d;
+  margin-bottom: 30px;
+}
+.meter-input {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 200, 220, 0.4);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  margin: 8px 0;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.meter-input:focus {
+  border-color: #ff4d8d;
+  box-shadow: 0 0 20px rgba(255, 77, 141, 0.4);
+}
+.meter-input::placeholder { color: rgba(255, 200, 220, 0.5); }
+
+.meter-bar {
+  margin: 30px 0;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 200, 220, 0.3);
+  display: none;
+}
+.meter-bar.show { display: block; }
+.meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff4d8d, #ff1a6b, #ffd700, #ff4d8d);
+  background-size: 200% 100%;
+  border-radius: 20px;
+  transition: width 4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: meterShine 2s linear infinite;
+  position: relative;
+}
+@keyframes meterShine {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+.meter-percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+.meter-result {
+  margin-top: 24px;
+  font-size: 22px;
+  font-style: italic;
+  color: #ffe6ee;
+  min-height: 30px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.meter-result.show { opacity: 1; }
+
+/* ------------------------------------------------------------------
+   ♥  SCENE 6 - GRAND FINALE
+   ------------------------------------------------------------------ */
+#scene6 {
+  background: #02000a;
+}
+
+.finale-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  width: 90%;
+  max-width: 800px;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+.finale-message.show { opacity: 1; }
+.finale-message h1 {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(60px, 12vw, 140px);
+  background: linear-gradient(135deg, #ff4d8d, #ffd700, #ff4d8d, #ffb3cd);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(255, 77, 141, 0.7));
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.finale-message p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(18px, 2.4vw, 26px);
+  color: #ffe6ee;
+  line-height: 1.7;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+.finale-message .signature {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: #ffb3cd;
+  margin-top: 30px;
+  text-shadow: 0 0 20px #ff4d8d;
+}
+
+.replay-btn {
+  margin-top: 24px;
+  padding: 12px 36px;
+  background: transparent;
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  font-family: inherit;
+  font-size: 16px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border-radius: 30px;
+  cursor: none;
+  transition: all 0.3s ease;
+}
+.replay-btn:hover {
+  background: #ffd700;
+  color: #4a0a35;
+  box-shadow: 0 0 30px #ffd700;
+}
+
+/* Floating cursor sparkles */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99998;
+  font-size: 14px;
+  animation: sparkleFade 1s ease-out forwards;
+}
+@keyframes sparkleFade {
+  0%   { opacity: 1; transform: scale(0.5) rotate(0deg); }
+  100% { opacity: 0; transform: scale(1.5) rotate(180deg) translateY(-30px); }
+}
+
+/* Floating love texts that drift across screen sometimes */
+.love-drift {
+  position: fixed;
+  font-family: 'Great Vibes', cursive;
+  font-size: 30px;
+  color: rgba(255, 179, 205, 0.6);
+  pointer-events: none;
+  z-index: 50;
+  animation: drift 14s linear forwards;
+  text-shadow: 0 0 20px rgba(255, 77, 141, 0.5);
+}
+@keyframes drift {
+  0%   { transform: translateX(-200px) translateY(0); opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateX(110vw) translateY(-60px); opacity: 0; }
+}
+
+/* Small screen tuning */
+@media (max-width: 600px) {
+  .letter-container { padding: 30px 20px; }
+  .letter-text { font-size: 18px; line-height: 1.7; }
+  .meter-card { padding: 30px 20px; }
+  .meter-title, .letter-title { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ♥  CUSTOM CURSOR
+     ============================================================ -->
+<div class="cursor" id="cursor"></div>
+
+<!-- ============================================================
+     ♥  MUSIC TOGGLE
+     ============================================================ -->
+<button class="music-toggle" id="musicBtn" title="Toggle music">♪</button>
+<audio id="bgMusic" loop preload="auto"></audio> 
+
+<!-- ============================================================
+     ♥  PROGRESS DOTS
+     ============================================================ -->
+<div class="progress" id="progress">
+  <div class="dot active" data-scene="1"></div>
+  <div class="dot" data-scene="2"></div>
+  <div class="dot" data-scene="3"></div>
+  <div class="dot" data-scene="4"></div>
+  <div class="dot" data-scene="5"></div>
+  <div class="dot" data-scene="6"></div>
+</div>
+
+<!-- ============================================================
+     ♥  SCENE 1 — COSMIC OPENING
+     ============================================================ -->
+<section class="scene active" id="scene1">
+  <canvas class="fullscreen" id="starsCanvas"></canvas>
+  <div class="giant-heart">♥</div>
+  <h1 class="opening-title" id="openingTitle">Dành cho fiancee của anh</h1>
+  <p class="opening-subtitle">Một vũ trụ nhỏ chỉ dành cho em</p>
+  <button class="continue-btn" onclick="goToScene(2)">Bắt đầu nào</button>
+</section>
+
+<!-- ============================================================
+     ♥  SCENE 2 — LOVE LETTER
+     ============================================================ -->
+<section class="scene" id="scene2">
+  <div id="petalsContainer"></div>
+  <div class="letter-container">
+    <h2 class="letter-title">A Letter For You</h2>
+    <div class="letter-text" id="letterText"></div>
+    <button class="continue-btn" id="letterContinue" style="opacity:0; pointer-events:none;" onclick="goToScene(3)">Continue</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ♥  SCENE 3 — MEMORY GARDEN
+     ============================================================ -->
+<section class="scene" id="scene3">
+  <div class="garden-hint">
+    Trồng một khu vườn của những ký ức chúng ta.
+    <small>Nhấn vào bất cứ đâu để trồng một đóa hoa tình yêu</small>
+  </div>
+  <div class="garden-ground"></div>
+  <div class="flower-counter" id="flowerCounter">🌹 0 / 8 hoa đã trồng </div>
+  <button class="continue-btn garden-continue" id="gardenContinue" onclick="goToScene(4)">Continue</button>
+</section>
+
+<!-- ============================================================
+     ♥  SCENE 4 — CONSTELLATION
+     ============================================================ -->
+<section class="scene" id="scene4">
+  <canvas class="fullscreen" id="constellationCanvas"></canvas>
+  <div class="constellation-text" id="constText">
+   Happy 14 months Anniversary —
+    <strong id="starName">03/25 - 05/26</strong>
+    Mỗi chòm sao là một bức thư tình,
+    mỗi thiên hà là một nơi anh sẽ đưa em đến.
+  </div>
+  <button class="continue-btn" id="constContinue" style="position:absolute; bottom:40px; left:50%; transform:translateX(-50%); opacity:0; pointer-events:none;" onclick="goToScene(5)">Continue</button>
+</section>
+
+<!-- ============================================================
+     ♥  SCENE 5 — LOVE METER
+     ============================================================ -->
+<section class="scene" id="scene5">
+  <div class="meter-card">
+    <h2 class="meter-title">Máy đo tình yêu</h2>
+    <p style="margin-bottom:20px; color:#ffd1e0; font-style:italic;">
+      Một dụng cụ khoa học có độ chính xác cao nhất*
+    </p>
+    <input class="meter-input" id="name1Input" placeholder="Tên của anh..." autocomplete="off"/>
+    <input class="meter-input" id="name2Input" placeholder="Tên của em..." autocomplete="off"/>
+    <button class="continue-btn" style="margin-top:24px;" onclick="calculateLove()">Calculate</button>
+
+    <div class="meter-bar" id="meterBar">
+      <div class="meter-fill" id="meterFill"></div>
+      <div class="meter-percent" id="meterPercent">0%</div>
+    </div>
+    <p class="meter-result" id="meterResult"></p>
+    <button class="continue-btn" id="meterContinue" style="margin-top:20px; opacity:0; pointer-events:none;" onclick="goToScene(6)">Cuối cùng</button>
+
+    <p style="margin-top:30px; font-size:13px; opacity:0.5; font-style:italic;">
+      *Kết quả được đảm bảo bởi các quy luật của vũ trụ.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     ♥  SCENE 6 — FINALE
+     ============================================================ -->
+<section class="scene" id="scene6">
+  <canvas class="fullscreen" id="fireworksCanvas"></canvas>
+  <div class="finale-message" id="finaleMsg">
+    <h1>Cám ơn em</h1>
+    <p id="finalePara"></p>
+    <div class="signature" id="finaleSig">— Forever yours</div>
+    <button class="replay-btn" onclick="restart()">Làm lại</button>
+  </div>
+</section>
+
+<script>
+/* ==================================================================
+   ♥  CONFIG — CUSTOMIZE THIS BLOCK FOR YOUR WIFE
+   ================================================================== */
+const CONFIG = {
+  // 💝 Change to your wife's name (or pet name)
+  wifeName: "My Love",
+
+  // 💝 Your name (used in the love calculator)
+  yourName: "Yours",
+
+  // 💝 The typewriter love letter (use \n for line breaks)
+  letterText:
+    "My dear,\n\n" +
+    "Nếu anh có thể dán những ngôi sao trên trời thành một câu duy nhất, " +
+    "nó vẫn sẽ không nói hết những gì em dành cho anh.\n\n" +
+    "Em là buổi sáng yêu thích nhất của anh, là buổi tối dịu dàng nhất của anh, " +
+    "bài hát anh ngân nga mà không hay biết.\n\n" +
+    "Cảm ơn em vì đã là của anh. Cảm ơn em vì đã để anh được là của em.\n\n" +
+    "Always & always — Khoa. ♥",
+
+  // 💝 The final message at the grand finale
+  finaleParagraph:
+    "Trong mọi vũ trụ, trong mọi kiếp sống, trong mọi phiên bản của mọi câu chuyện. — " +
+    "Anh sẽ tìm thấy em, và anh sẽ chọn em.",
+
+  // 💝 The "from" signature on the finale
+  finaleSignature: "— Forever yours",
+
+  // 💝 Number of flowers she needs to plant before continuing
+  flowersToPlant: 8,
+
+
+  // 💝 Path to your music file, relative to this HTML file.       ← NEW
+  //    Drop your song into the same folder and name it "music.mp3",
+  //    or change this string to match your filename (e.g. "song.mp3",
+  //    "./audio/our-song.m4a"). Supported: .mp3, .m4a, .ogg, .wav.
+  musicFile: "music.mp3",                         // ← NEW
+
+  // 💝 Volume (0.0 - 1.0)                                          ← NEW
+  musicVolume: 0.5  
+};
+
+// Apply config to DOM
+document.getElementById('openingTitle').textContent = "For My Beloved " + CONFIG.wifeName;
+document.getElementById('starName').textContent = CONFIG.wifeName;
+document.getElementById('finalePara').textContent = CONFIG.finaleParagraph;
+document.getElementById('finaleSig').textContent = CONFIG.finaleSignature;
+document.getElementById('flowerCounter').textContent = `🌹 0 / ${CONFIG.flowersToPlant} flowers planted`;
+
+/* ==================================================================
+   ♥  CUSTOM CURSOR
+   ================================================================== */
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = (e.clientX - 12) + 'px';
+  cursor.style.top  = (e.clientY - 12) + 'px';
+
+  // Occasional sparkle trail
+  if (Math.random() < 0.18) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (e.clientX + (Math.random()*20-10)) + 'px';
+    s.style.top  = (e.clientY + (Math.random()*20-10)) + 'px';
+    s.style.color = ['#ff4d8d','#ffd700','#ffb3cd','#ff1a6b'][Math.floor(Math.random()*4)];
+    s.textContent = ['✦','♥','✨','✧'][Math.floor(Math.random()*4)];
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+});
+
+/* ==================================================================
+   ♥  SCENE NAVIGATION
+   ================================================================== */
+let currentScene = 1;
+const totalScenes = 6;
+
+function goToScene(n) {
+  if (n < 1 || n > totalScenes) return;
+
+  // Hide current
+  document.getElementById('scene' + currentScene).classList.remove('active');
+  // Show next
+  document.getElementById('scene' + n).classList.add('active');
+
+  // Update progress dots
+  document.querySelectorAll('.progress .dot').forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    const sceneNum = i + 1;
+    if (sceneNum < n)      d.classList.add('done');
+    else if (sceneNum === n) d.classList.add('active');
+  });
+
+  currentScene = n;
+  onSceneEnter(n);
+}
+
+function onSceneEnter(n) {
+  if (n === 2) startLetter();
+  if (n === 3) initGarden();
+  if (n === 4) initConstellation();
+  if (n === 5) resetLoveMeter();
+  if (n === 6) initFinale();
+}
+
+function restart() {
+  // Reset everything and go back to scene 1
+  resetGarden();
+  resetLetter();
+  resetLoveMeter();
+  goToScene(1);
+}
+
+/* ==================================================================
+   ♥  SCENE 1 — STARFIELD CANVAS
+   ================================================================== */
+const starsCanvas = document.getElementById('starsCanvas');
+const starsCtx = starsCanvas.getContext('2d');
+let stars = [];
+
+function resizeStars() {
+  starsCanvas.width  = window.innerWidth;
+  starsCanvas.height = window.innerHeight;
+  stars = [];
+  const count = Math.floor((starsCanvas.width * starsCanvas.height) / 4000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * starsCanvas.width,
+      y: Math.random() * starsCanvas.height,
+      r: Math.random() * 1.6 + 0.3,
+      alpha: Math.random(),
+      dAlpha: (Math.random() * 0.02) + 0.005,
+      hue: Math.random() < 0.15 ? 330 : (Math.random() < 0.3 ? 50 : 0)
+    });
+  }
+}
+function drawStars() {
+  starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+  for (const s of stars) {
+    s.alpha += s.dAlpha;
+    if (s.alpha > 1 || s.alpha < 0) s.dAlpha = -s.dAlpha;
+    starsCtx.beginPath();
+    starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    if (s.hue === 330) starsCtx.fillStyle = `hsla(330, 80%, 70%, ${s.alpha})`;
+    else if (s.hue === 50) starsCtx.fillStyle = `hsla(50, 90%, 70%, ${s.alpha})`;
+    else starsCtx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+    starsCtx.fill();
+    // glow
+    starsCtx.shadowBlur = 8;
+    starsCtx.shadowColor = starsCtx.fillStyle;
+  }
+  starsCtx.shadowBlur = 0;
+  requestAnimationFrame(drawStars);
+}
+window.addEventListener('resize', resizeStars);
+resizeStars();
+drawStars();
+
+// Floating orbs in scene 1
+function spawnOrbs() {
+  const scene1 = document.getElementById('scene1');
+  for (let i = 0; i < 15; i++) {
+    const orb = document.createElement('div');
+    orb.className = 'orb';
+    const size = Math.random() * 8 + 4;
+    orb.style.width = size + 'px';
+    orb.style.height = size + 'px';
+    orb.style.left = (Math.random() * 100) + 'vw';
+    orb.style.background = ['#ff4d8d','#ffd700','#ffb3cd','#c084fc'][Math.floor(Math.random()*4)];
+    orb.style.opacity = '0.7';
+    orb.style.boxShadow = `0 0 ${size*2}px currentColor`;
+    orb.style.animationDuration = (Math.random() * 12 + 10) + 's';
+    orb.style.animationDelay = (Math.random() * 10) + 's';
+    scene1.appendChild(orb);
+  }
+}
+spawnOrbs();
+
+// Ambient drifting love words
+function spawnLoveDrift() {
+  const words = ['mi amor', 'my Hailey', 'always', 'forever', '♥', 'my love', 'beloved', 'darling'];
+  const el = document.createElement('div');
+  el.className = 'love-drift';
+  el.textContent = words[Math.floor(Math.random() * words.length)];
+  el.style.top = (Math.random() * 80 + 5) + 'vh';
+  el.style.fontSize = (Math.random() * 24 + 20) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 14000);
+}
+setInterval(spawnLoveDrift, 4500);
+
+/* ==================================================================
+   ♥  SCENE 2 — LOVE LETTER (TYPEWRITER + PETALS)
+   ================================================================== */
+let letterTimer = null;
+let letterStarted = false;
+function startLetter() {
+  if (letterStarted) return;
+  letterStarted = true;
+  spawnPetals();
+  typeLetter();
+}
+function resetLetter() {
+  letterStarted = false;
+  document.getElementById('letterText').innerHTML = '';
+  const cont = document.getElementById('letterContinue');
+  cont.style.opacity = '0';
+  cont.style.pointerEvents = 'none';
+  if (letterTimer) clearInterval(letterTimer);
+}
+function typeLetter() {
+  const target = document.getElementById('letterText');
+  const text = CONFIG.letterText;
+  let i = 0;
+  target.innerHTML = '<span class="cursor-blink">|</span>';
+  letterTimer = setInterval(() => {
+    if (i >= text.length) {
+      clearInterval(letterTimer);
+      target.innerHTML = text.replace(/\n/g, '<br>');
+      const cont = document.getElementById('letterContinue');
+      cont.style.transition = 'opacity 1.5s ease';
+      cont.style.opacity = '1';
+      cont.style.pointerEvents = 'auto';
+      return;
+    }
+    const partial = text.substring(0, i + 1).replace(/\n/g, '<br>');
+    target.innerHTML = partial + '<span class="cursor-blink">|</span>';
+    i++;
+  }, 40);
+}
+
+function spawnPetals() {
+  const container = document.getElementById('petalsContainer');
+  container.innerHTML = '';
+  const petalChars = ['🌸', '🌺', '🌷', '💮', '🌹'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalChars[Math.floor(Math.random() * petalChars.length)];
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.fontSize = (Math.random() * 16 + 14) + 'px';
+    p.style.animationDuration = (Math.random() * 8 + 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    container.appendChild(p);
+  }
+}
+
+/* ==================================================================
+   ♥  SCENE 3 — MEMORY GARDEN (CLICK TO PLANT)
+   ================================================================== */
+let flowersPlanted = 0;
+const flowerChars = ['🌹', '🌷', '🌸', '🌺', '🌻', '💐', '🌼', '💮'];
+const flowerColors = ['#ff4d8d', '#ffd700', '#ff8fa3', '#ffb3cd', '#ff1a6b'];
+
+function initGarden() {
+  resetGarden();
+  const scene3 = document.getElementById('scene3');
+  scene3.onclick = (e) => {
+    // ignore clicks on UI
+    if (e.target.tagName === 'BUTTON' || e.target.classList.contains('continue-btn')) return;
+    plantFlower(e.clientX, e.clientY);
+  };
+}
+
+function resetGarden() {
+  flowersPlanted = 0;
+  document.getElementById('flowerCounter').textContent = `🌹 0 / ${CONFIG.flowersToPlant} flowers planted`;
+  document.getElementById('flowerCounter').style.display = 'block';
+  document.getElementById('gardenContinue').classList.remove('show');
+  // remove existing blooms
+  document.querySelectorAll('#scene3 .bloom').forEach(b => b.remove());
+}
+
+function plantFlower(x, y) {
+  const scene3 = document.getElementById('scene3');
+  const flower = document.createElement('div');
+  flower.className = 'bloom';
+  flower.textContent = flowerChars[Math.floor(Math.random() * flowerChars.length)];
+  flower.style.left = (x - 30) + 'px';
+  flower.style.top  = (y - 30) + 'px';
+  flower.style.color = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+  scene3.appendChild(flower);
+
+  // burst of small hearts
+  for (let i = 0; i < 6; i++) {
+    const heart = document.createElement('div');
+    heart.style.position = 'absolute';
+    heart.style.left = x + 'px';
+    heart.style.top = y + 'px';
+    heart.style.fontSize = '14px';
+    heart.style.color = '#ff4d8d';
+    heart.style.pointerEvents = 'none';
+    heart.style.transition = 'all 1s ease-out';
+    heart.style.zIndex = 4;
+    heart.textContent = '♥';
+    scene3.appendChild(heart);
+    requestAnimationFrame(() => {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 60;
+      heart.style.left = (x + Math.cos(angle) * dist) + 'px';
+      heart.style.top  = (y + Math.sin(angle) * dist) + 'px';
+      heart.style.opacity = '0';
+      heart.style.transform = 'scale(2)';
+    });
+    setTimeout(() => heart.remove(), 1000);
+  }
+
+  flowersPlanted++;
+  document.getElementById('flowerCounter').textContent =
+    `🌹 ${flowersPlanted} / ${CONFIG.flowersToPlant} flowers planted`;
+
+  if (flowersPlanted >= CONFIG.flowersToPlant) {
+    document.getElementById('flowerCounter').style.display = 'none';
+    document.getElementById('gardenContinue').classList.add('show');
+  }
+
+  playPlantSound();
+}
+
+/* ==================================================================
+   ♥  SCENE 4 — CONSTELLATION CANVAS
+   ================================================================== */
+const constCanvas = document.getElementById('constellationCanvas');
+const constCtx = constCanvas.getContext('2d');
+let constStarsBg = [];
+let constellationStars = [];
+let constellationAnimating = false;
+
+function resizeConst() {
+  constCanvas.width  = window.innerWidth;
+  constCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConst);
+resizeConst();
+
+// Generate heart-shape points (parametric)
+function heartPoints(cx, cy, scale, count) {
+  const pts = [];
+  for (let i = 0; i < count; i++) {
+    const t = (i / count) * Math.PI * 2;
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    pts.push({ x: cx + x * scale, y: cy + y * scale });
+  }
+  return pts;
+}
+
+function initConstellation() {
+  // background star field
+  constStarsBg = [];
+  const count = Math.floor((constCanvas.width * constCanvas.height) / 3500);
+  for (let i = 0; i < count; i++) {
+    constStarsBg.push({
+      x: Math.random() * constCanvas.width,
+      y: Math.random() * constCanvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      alpha: Math.random(),
+      dAlpha: (Math.random() * 0.015) + 0.003
+    });
+  }
+
+  // heart constellation stars
+  const cx = constCanvas.width / 2;
+  const cy = constCanvas.height / 2 - 30;
+  const scale = Math.min(constCanvas.width, constCanvas.height) / 50;
+  const pts = heartPoints(cx, cy, scale, 22);
+  constellationStars = pts.map((p, i) => ({
+    x: p.x, y: p.y,
+    appear: false,
+    appearTime: 200 + i * 180,
+    bornAt: performance.now()
+  }));
+
+  constellationAnimating = true;
+  drawConstellation();
+
+  // Show text and continue button after stars appear
+  setTimeout(() => {
+    document.getElementById('constText').classList.add('show');
+  }, 5000);
+  setTimeout(() => {
+    const c = document.getElementById('constContinue');
+    c.style.opacity = '1';
+    c.style.pointerEvents = 'auto';
+  }, 7000);
+}
+
+function drawConstellation() {
+  if (!constellationAnimating) return;
+  constCtx.fillStyle = 'rgba(4, 0, 12, 0.15)';
+  constCtx.fillRect(0, 0, constCanvas.width, constCanvas.height);
+
+  // background stars
+  for (const s of constStarsBg) {
+    s.alpha += s.dAlpha;
+    if (s.alpha > 1 || s.alpha < 0) s.dAlpha = -s.dAlpha;
+    constCtx.beginPath();
+    constCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    constCtx.fillStyle = `rgba(220, 200, 255, ${s.alpha * 0.7})`;
+    constCtx.fill();
+  }
+
+  // constellation stars (appear over time)
+  const now = performance.now();
+  const visibleStars = [];
+  constellationStars.forEach((s) => {
+    if (!s.appear && now - s.bornAt > s.appearTime) s.appear = true;
+    if (s.appear) {
+      visibleStars.push(s);
+      // pulsing star with glow
+      const pulse = 1 + Math.sin(now / 400 + s.x * 0.01) * 0.3;
+      constCtx.shadowBlur = 18;
+      constCtx.shadowColor = '#fff';
+      constCtx.beginPath();
+      constCtx.arc(s.x, s.y, 2.5 * pulse, 0, Math.PI * 2);
+      constCtx.fillStyle = '#fff';
+      constCtx.fill();
+
+      constCtx.shadowBlur = 30;
+      constCtx.shadowColor = '#ff4d8d';
+      constCtx.beginPath();
+      constCtx.arc(s.x, s.y, 1.2, 0, Math.PI * 2);
+      constCtx.fillStyle = '#ffb3cd';
+      constCtx.fill();
+    }
+  });
+
+  // connect stars with glowing line
+  if (visibleStars.length > 1) {
+    constCtx.shadowBlur = 12;
+    constCtx.shadowColor = '#ff4d8d';
+    constCtx.strokeStyle = 'rgba(255, 179, 205, 0.55)';
+    constCtx.lineWidth = 1.2;
+    constCtx.beginPath();
+    constCtx.moveTo(visibleStars[0].x, visibleStars[0].y);
+    for (let i = 1; i < visibleStars.length; i++) {
+      constCtx.lineTo(visibleStars[i].x, visibleStars[i].y);
+    }
+    if (visibleStars.length === constellationStars.length) {
+      constCtx.lineTo(visibleStars[0].x, visibleStars[0].y);
+    }
+    constCtx.stroke();
+  }
+  constCtx.shadowBlur = 0;
+
+  requestAnimationFrame(drawConstellation);
+}
+
+/* ==================================================================
+   ♥  SCENE 5 — LOVE METER (ALWAYS 100% ♥)
+   ================================================================== */
+function resetLoveMeter() {
+  document.getElementById('name1Input').value = '';
+  document.getElementById('name2Input').value = '';
+  document.getElementById('meterBar').classList.remove('show');
+  document.getElementById('meterFill').style.width = '0%';
+  document.getElementById('meterPercent').textContent = '0%';
+  document.getElementById('meterResult').classList.remove('show');
+  document.getElementById('meterResult').textContent = '';
+  const c = document.getElementById('meterContinue');
+  c.style.opacity = '0';
+  c.style.pointerEvents = 'none';
+}
+
+function calculateLove() {
+  const n1 = document.getElementById('name1Input').value.trim();
+  const n2 = document.getElementById('name2Input').value.trim();
+  if (!n1 || !n2) {
+    document.getElementById('meterResult').classList.add('show');
+    document.getElementById('meterResult').textContent = '✨ please fill in both names ✨';
+    return;
+  }
+
+  document.getElementById('meterBar').classList.add('show');
+  // animated count up to 100%
+  const fill = document.getElementById('meterFill');
+  const percent = document.getElementById('meterPercent');
+  fill.style.width = '100%';
+
+  let p = 0;
+  const interval = setInterval(() => {
+    p += 1.2;
+    if (p >= 100) {
+      p = 100;
+      clearInterval(interval);
+      const r = document.getElementById('meterResult');
+      r.innerHTML = `<strong style="color:#ff4d8d">100%</strong> — Dĩ nhiên rồi. Cả thiên hà đều đồng ý hết. ♥`;
+      r.classList.add('show');
+      const c = document.getElementById('meterContinue');
+      c.style.opacity = '1';
+      c.style.pointerEvents = 'auto';
+    }
+    percent.textContent = Math.floor(p) + '%';
+  }, 40);
+}
+
+/* ==================================================================
+   ♥  SCENE 6 — FIREWORKS FINALE
+   ================================================================== */
+const fwCanvas = document.getElementById('fireworksCanvas');
+const fwCtx = fwCanvas.getContext('2d');
+let fwParticles = [];
+let fwRockets = [];
+let fwAnimating = false;
+
+function resizeFw() {
+  fwCanvas.width  = window.innerWidth;
+  fwCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeFw);
+resizeFw();
+
+function initFinale() {
+  fwParticles = [];
+  fwRockets = [];
+  fwAnimating = true;
+  drawFireworks();
+  // periodically launch
+  if (!window._fwInterval) {
+    window._fwInterval = setInterval(() => {
+      if (currentScene !== 6) return;
+      launchRocket();
+    }, 600);
+  }
+  // first salvo
+  for (let i = 0; i < 5; i++) setTimeout(launchRocket, i * 200);
+
+  // Show finale message after a moment
+  setTimeout(() => {
+    document.getElementById('finaleMsg').classList.add('show');
+  }, 1500);
+}
+
+function launchRocket() {
+  const startX = Math.random() * fwCanvas.width;
+  const startY = fwCanvas.height;
+  const targetX = startX + (Math.random() - 0.5) * 200;
+  const targetY = Math.random() * (fwCanvas.height * 0.45) + 50;
+  const hue = [330, 50, 280, 350, 10, 320][Math.floor(Math.random() * 6)];
+  fwRockets.push({
+    x: startX, y: startY,
+    tx: targetX, ty: targetY,
+    vx: (targetX - startX) / 50,
+    vy: (targetY - startY) / 50,
+    hue,
+    trail: []
+  });
+}
+
+function explode(x, y, hue) {
+  const count = 80 + Math.floor(Math.random() * 60);
+  const shape = Math.random();
+  for (let i = 0; i < count; i++) {
+    let vx, vy;
+    if (shape < 0.25) {
+      // heart-shaped burst
+      const t = (i / count) * Math.PI * 2;
+      const hx = 16 * Math.pow(Math.sin(t), 3);
+      const hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+      vx = hx * 0.18;
+      vy = hy * 0.18;
+    } else {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 5 + 2;
+      vx = Math.cos(angle) * speed;
+      vy = Math.sin(angle) * speed;
+    }
+    fwParticles.push({
+      x, y, vx, vy,
+      life: 1,
+      decay: Math.random() * 0.015 + 0.008,
+      hue: hue + (Math.random() * 30 - 15),
+      size: Math.random() * 2 + 1.2,
+      isHeart: shape < 0.25 && Math.random() < 0.15
+    });
+  }
+}
+
+function drawFireworks() {
+  if (!fwAnimating) return;
+  // dark fade for trail effect
+  fwCtx.fillStyle = 'rgba(2, 0, 10, 0.18)';
+  fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
+
+  // rockets
+  for (let i = fwRockets.length - 1; i >= 0; i--) {
+    const r = fwRockets[i];
+    r.trail.push({ x: r.x, y: r.y });
+    if (r.trail.length > 12) r.trail.shift();
+    r.x += r.vx;
+    r.y += r.vy;
+
+    // trail
+    for (let j = 0; j < r.trail.length; j++) {
+      const t = r.trail[j];
+      const alpha = j / r.trail.length;
+      fwCtx.beginPath();
+      fwCtx.arc(t.x, t.y, 1.5 * alpha, 0, Math.PI * 2);
+      fwCtx.fillStyle = `hsla(${r.hue}, 90%, 70%, ${alpha})`;
+      fwCtx.fill();
+    }
+
+    // rocket itself
+    fwCtx.shadowBlur = 15;
+    fwCtx.shadowColor = `hsl(${r.hue}, 90%, 70%)`;
+    fwCtx.beginPath();
+    fwCtx.arc(r.x, r.y, 2, 0, Math.PI * 2);
+    fwCtx.fillStyle = '#fff';
+    fwCtx.fill();
+    fwCtx.shadowBlur = 0;
+
+    if (Math.abs(r.y - r.ty) < 8 || r.y < 60) {
+      explode(r.x, r.y, r.hue);
+      fwRockets.splice(i, 1);
+    }
+  }
+
+  // explosion particles
+  for (let i = fwParticles.length - 1; i >= 0; i--) {
+    const p = fwParticles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.04;       // gravity
+    p.vx *= 0.99;
+    p.vy *= 0.99;
+    p.life -= p.decay;
+
+    if (p.life <= 0) {
+      fwParticles.splice(i, 1);
+      continue;
+    }
+
+    fwCtx.globalAlpha = p.life;
+    fwCtx.shadowBlur = 10;
+    fwCtx.shadowColor = `hsl(${p.hue}, 95%, 65%)`;
+
+    if (p.isHeart) {
+      fwCtx.fillStyle = `hsl(${p.hue}, 95%, 70%)`;
+      fwCtx.font = `${p.size * 6}px serif`;
+      fwCtx.fillText('♥', p.x, p.y);
+    } else {
+      fwCtx.beginPath();
+      fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      fwCtx.fillStyle = `hsl(${p.hue}, 95%, 65%)`;
+      fwCtx.fill();
+    }
+  }
+  fwCtx.globalAlpha = 1;
+  fwCtx.shadowBlur = 0;
+
+  requestAnimationFrame(drawFireworks);
+}
+
+/* ==================================================================
+   ♥  MUSIC — LOCAL FILE FROM WORKING DIRECTORY
+   ================================================================== */
+const musicBtn = document.getElementById('musicBtn');
+const bgMusic  = document.getElementById('bgMusic');
+let musicPlaying = false;
+let fadeInterval = null;
+
+// Load the music file from CONFIG
+bgMusic.src = CONFIG.musicFile;
+bgMusic.volume = 0;
+
+function fadeAudio(targetVolume, durationMs, onDone) {
+  if (fadeInterval) clearInterval(fadeInterval);
+  const start = bgMusic.volume;
+  const startTime = performance.now();
+  fadeInterval = setInterval(() => {
+    const t = Math.min(1, (performance.now() - startTime) / durationMs);
+    bgMusic.volume = start + (targetVolume - start) * t;
+    if (t >= 1) {
+      clearInterval(fadeInterval);
+      fadeInterval = null;
+      if (onDone) onDone();
+    }
+  }, 30);
+}
+
+function startMusic() {
+  const p = bgMusic.play();
+  if (p && p.catch) {
+    p.catch(err => {
+      console.warn('Music failed to play:', err);
+      alert(
+        'Could not play "' + CONFIG.musicFile + '".\n\n' +
+        'Make sure the file is in the same folder as this HTML, ' +
+        'or update CONFIG.musicFile to match your filename.'
+      );
+    });
+  }
+  fadeAudio(CONFIG.musicVolume, 1500);
+}
+
+function stopMusic() {
+  fadeAudio(0, 800, () => bgMusic.pause());
+}
+
+musicBtn.addEventListener('click', () => {
+  if (musicPlaying) {
+    stopMusic();
+    musicBtn.classList.remove('playing');
+    musicBtn.textContent = '♪';
+    musicPlaying = false;
+  } else {
+    startMusic();
+    musicBtn.classList.add('playing');
+    musicBtn.textContent = '♫';
+    musicPlaying = true;
+  }
+});
+
+/* Small separate AudioContext, only for the gentle chime when a
+   flower is planted in Scene 3. Independent of the background music. */
+let sfxCtx = null;
+function playPlantSound() {
+  try {
+    if (!sfxCtx) sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (sfxCtx.state === 'suspended') sfxCtx.resume();
+    const osc = sfxCtx.createOscillator();
+    const gain = sfxCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 600 + Math.random() * 400;
+    const now = sfxCtx.currentTime;
+    gain.gain.setValueAtTime(0.10, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc.connect(gain);
+    gain.connect(sfxCtx.destination);
+    osc.start();
+    osc.stop(now + 0.4);
+  } catch (e) { /* ignore — sfx is non-essential */ }
+}
+
+/* ==================================================================
+   ♥  KEYBOARD SHORTCUTS
+   ================================================================== */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' && currentScene < totalScenes) goToScene(currentScene + 1);
+  if (e.key === 'ArrowLeft' && currentScene > 1)             goToScene(currentScene - 1);
+});
+
+// Allow clicking progress dots to navigate
+document.querySelectorAll('.progress .dot').forEach((dot, i) => {
+  dot.addEventListener('click', () => goToScene(i + 1));
+});
+</script>
+</body>
+</html>
